@@ -3,7 +3,7 @@ module ActionView
   module Helpers
     def connexion_bar(options = {})
       options[:community] ||= 'Public'
-      unless false #session[:connexion_bar]
+      unless session[:connexion_bar]
         service_uri = "https://www.mygcx.org/#{options[:community]}/module/omnibar/omnibar"
         proxy_granting_ticket = session[:cas_pgt]
         unless proxy_granting_ticket.nil?
