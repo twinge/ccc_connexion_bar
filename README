@@ -8,3 +8,10 @@ Dependencies
 
 To use this helper, you must have a properly configured cas client that uses mygcx as it's authenticating server.
 Your cas client configuration must also include a valid proxy granting server.
+
+Example Usage
+=============
+
+In your layouts just after the <body> tag:
+
+<%= connexion_bar %>
