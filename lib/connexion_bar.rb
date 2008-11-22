@@ -1,7 +1,7 @@
 module ActionView
   module Helpers
     def connexion_bar
-      unless @connexion_bar
+      unless session[:connexion_bar]
         service_uri = "https://www.mygcx.org/Public/module/omnibar/omnibar"
         proxy_granting_ticket = session[:cas_pgt]
         unless proxy_granting_ticket.nil?
@@ -20,16 +20,16 @@ module ActionView
             doc = REXML::Document.new(raw_res.body)
           rescue REXML::ParseException => e
             logger.debug("MALFORMED CAS RESPONSE:\n#{raw_res.inspect}\n\nEXCEPTION:\n#{e}")
-            return @connexion_bar = ''
+            return session[:connexion_bar] = ''
           end
           unless doc.elements && doc.elements["reportoutput"]
             logger.debug("This does not appear to be a valid connexion bar (missing reportdata element)!\nXML DOC:\n#{doc.elements.to_s}")
-            return @connexion_bar = ''
+            return session[:connexion_bar] = ''
           end
-          @connexion_bar = doc.elements['reportoutput'].children.first.to_s
+          session[:connexion_bar] = doc.elements['reportoutput'].children.first.to_s
         end
       end
-      return @connexion_bar
+      return session[:connexion_bar]
     end
   end
 end
