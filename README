@@ -15,3 +15,9 @@ Example Usage
 In your layouts just after the <body> tag:
 
 <%= connexion_bar %>
+
+or you can specify the following options: :community, :logout, :css
+
+<%= connexion_bar(:community => 'CampusStaff') %> # Default is the 'Public' community
+
+<%= connexion_bar(:logout => link_to('LOGOUT', '/logout'), :css => 'http://example.com/im_special.css') %>

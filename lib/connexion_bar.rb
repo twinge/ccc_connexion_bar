@@ -1,11 +1,12 @@
+require 'hpricot'
 module ActionView
   module Helpers
-    def connexion_bar
-      unless session[:connexion_bar]
-        service_uri = "https://www.mygcx.org/Public/module/omnibar/omnibar"
+    def connexion_bar(options = {})
+      options[:community] ||= 'Public'
+      unless false #session[:connexion_bar]
+        service_uri = "https://www.mygcx.org/#{options[:community]}/module/omnibar/omnibar"
         proxy_granting_ticket = session[:cas_pgt]
         unless proxy_granting_ticket.nil?
-          # raise proxy_granting_ticket.inspect
           proxy_ticket = CASClient::Frameworks::Rails::Filter.client.request_proxy_ticket(proxy_granting_ticket, service_uri).ticket
           ticket = CASClient::ServiceTicket.new(proxy_ticket, service_uri)
           uri = "#{service_uri}?ticket=#{proxy_ticket}"
@@ -26,7 +27,17 @@ module ActionView
             logger.debug("This does not appear to be a valid connexion bar (missing reportdata element)!\nXML DOC:\n#{doc.elements.to_s}")
             return session[:connexion_bar] = ''
           end
-          session[:connexion_bar] = doc.elements['reportoutput'].children.first.to_s
+          doc = Hpricot(raw_res.body)
+          # Replace the CSS file
+          if options[:css]
+            (doc/'style').first.inner_html = "@import url(\"#{options[:css]}\");"
+          end
+          # Replace the logout link
+          if options[:logout]
+            old_link = (doc/'a').detect {|e| e.inner_html == 'LOGOUT'}
+            old_link.parent.inner_html = options[:logout]
+          end
+          session[:connexion_bar] = (doc/'reportdata').html
         end
       end
       return session[:connexion_bar]
